@@ -42,7 +42,7 @@ releases:
 
   - name: karpenter
     chart: karpenter/karpenter
-    version: 1.12.0
+    version: 1.12.1
 
   - name: cilium
     chart: cilium/cilium
