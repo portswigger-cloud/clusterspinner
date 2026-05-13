@@ -46,7 +46,7 @@ releases:
 
   - name: cilium
     chart: cilium/cilium
-    version: 1.19.3
+    version: 1.19.4
 
   - name: argocd
     chart: argo/argo-cd
