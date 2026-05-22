@@ -22,7 +22,7 @@ repositories:
 releases:
   - name: teleport-cluster
     chart: teleport/teleport-cluster
-    version: 18.7.6
+    version: 18.8.2
 
   - name: teleport-kube-agent
     chart: teleport/teleport-kube-agent
