@@ -30,7 +30,7 @@ releases:
 
   - name: aws-load-balancer-controller
     chart: eks/aws-load-balancer-controller
-    version: 3.2.2
+    version: 3.4.0
 
   - name: cert-manager
     chart: jetstack/cert-manager
