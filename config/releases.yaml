@@ -18,6 +18,8 @@ repositories:
     oci: true
   - name: argo
     url: https://argoproj.github.io/argo-helm
+  - name: metrics-server
+    url: https://kubernetes-sigs.github.io/metrics-server
 
 releases:
   - name: teleport-cluster
@@ -51,3 +53,7 @@ releases:
   - name: argocd
     chart: argo/argo-cd
     version: 9.5.18
+
+  - name: metrics-server
+    chart: metrics-server/metrics-server
+    version: 3.13.0

@@ -54,3 +54,6 @@ namespace = "argo"
 release = "argocd"
 values = ["argocd/values.yaml"]
 
+[[helm]]
+namespace = "metrics-server"
+release = "metrics-server"
