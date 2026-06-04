@@ -50,4 +50,4 @@ releases:
 
   - name: argocd
     chart: argo/argo-cd
-    version: 9.5.11
+    version: 9.5.18
