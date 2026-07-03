@@ -57,3 +57,8 @@ values = ["argocd/values.yaml"]
 [[helm]]
 namespace = "metrics-server"
 release = "metrics-server"
+
+[[copy]]
+name = "echo"
+namespace = "echo"
+source = "echo"
