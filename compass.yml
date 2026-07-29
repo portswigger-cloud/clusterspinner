@@ -1,0 +1,12 @@
+name: clusterspinner
+slug: clusterspinner
+configVersion: 1
+typeId: CLOUD_RESOURCE
+ownerId: 'ari:cloud:identity::team/793aa195-1b2d-44e4-8fd5-6aa1f3c273e9'
+fields:
+  lifecycle: Active
+  tier: 4
+  isMonorepoProject: false
+links:
+  - type: REPOSITORY
+    url: 'https://github.com/portswigger-cloud/clusterspinner'
