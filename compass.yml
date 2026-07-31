@@ -1,5 +1,6 @@
 name: clusterspinner
 slug: clusterspinner
+description: 'some terraform to create k8s in the aws playground account'
 configVersion: 1
 typeId: CLOUD_RESOURCE
 ownerId: 'ari:cloud:identity::team/793aa195-1b2d-44e4-8fd5-6aa1f3c273e9'
