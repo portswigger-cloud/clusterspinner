@@ -13,9 +13,9 @@ resource "aws_security_group" "cluster" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-cluster-sg"
-  })
+  }
 }
 
 resource "aws_iam_role" "cluster" {
@@ -60,8 +60,6 @@ resource "aws_eks_cluster" "this" {
   }
 
   depends_on = [aws_iam_role_policy_attachment.cluster_policy]
-
-  tags = local.common_tags
 }
 
 resource "aws_ec2_tag" "cluster_sg_discovery" {
@@ -136,8 +134,6 @@ resource "aws_eks_node_group" "default" {
     aws_iam_role_policy_attachment.node_ssm,
     module.cilium_bootstrap,
   ]
-
-  tags = local.common_tags
 }
 
 resource "aws_eks_addon" "coredns" {
@@ -146,8 +142,6 @@ resource "aws_eks_addon" "coredns" {
 
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
-
-  tags = local.common_tags
 
   depends_on = [aws_eks_node_group.default]
 }
@@ -160,6 +154,4 @@ resource "aws_iam_openid_connect_provider" "eks" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.eks_oidc.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
-
-  tags = local.common_tags
 }

@@ -15,13 +15,7 @@ data "aws_availability_zones" "available" {
 locals {
   cluster_version     = "1.35"
   vpc_cidr            = "10.0.0.0/16"
-  node_instance_types = ["r6g.medium"]
+  node_instance_types = ["r4g.medium"]
   node_desired_size   = 2
   azs                 = data.aws_availability_zones.available.names
-
-  common_tags = {
-    Project = var.cluster_name
-    OWNER   = var.owner
-    EXPIRES = "2026-04-01"
-  }
 }
