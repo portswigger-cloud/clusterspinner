@@ -253,21 +253,6 @@ resource "aws_iam_policy" "clusterspinner" {
         Resource = local.oidc_provider_arns
       },
       {
-        Sid    = "Route53ManageParentZone"
-        Effect = "Allow"
-        Action = [
-          "route53:CreateHostedZone",
-          "route53:DeleteHostedZone",
-          "route53:GetHostedZone",
-          "route53:ListHostedZones",
-          "route53:ListTagsForResource",
-          "route53:ChangeTagsForResource",
-          "route53:ChangeResourceRecordSets",
-          "route53:ListResourceRecordSets"
-        ]
-        Resource = "*"
-      },
-      {
         Sid    = "S3ListTerraformStateBucket"
         Effect = "Allow"
         Action = [
@@ -418,8 +403,4 @@ resource "aws_iam_policy" "clusterspinner_karpenter" {
 resource "aws_iam_role_policy_attachment" "attach_karpenter" {
   role       = aws_iam_role.this.name
   policy_arn = aws_iam_policy.clusterspinner_karpenter.arn
-}
-
-resource "aws_route53_zone" "parent_zone" {
-  name = var.zone_name
 }

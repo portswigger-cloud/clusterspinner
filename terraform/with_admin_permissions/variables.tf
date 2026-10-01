@@ -20,8 +20,3 @@ variable "trusted_principals" {
   description = "List of IAM principal ARNs allowed to assume the runner role."
   type        = list(string)
 }
-
-variable "zone_name" {
-  description = "Route53 hosted zone name to create and manage."
-  type        = string
-}
