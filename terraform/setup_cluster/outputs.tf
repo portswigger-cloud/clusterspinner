@@ -26,8 +26,3 @@ output "configure_kubectl" {
   description = "Command to update kubeconfig for the new cluster."
   value       = "aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.this.name}"
 }
-
-output "cert_manager_role_arn" {
-  description = "IRSA role ARN to annotate the cert-manager service account with."
-  value       = aws_iam_role.cert_manager.arn
-}

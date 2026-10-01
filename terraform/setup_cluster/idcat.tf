@@ -35,8 +35,6 @@ resource "aws_iam_role" "idcat" {
       }
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_policy" "idcat" {
@@ -63,8 +61,6 @@ resource "aws_iam_policy" "idcat" {
       }
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_role_policy_attachment" "idcat" {

@@ -6,8 +6,6 @@ resource "aws_sqs_queue" "karpenter_interruption" {
   name                      = var.cluster_name
   message_retention_seconds = 300
   sqs_managed_sse_enabled   = true
-
-  tags = local.common_tags
 }
 
 resource "aws_sqs_queue_policy" "karpenter_interruption" {
@@ -48,7 +46,6 @@ resource "aws_cloudwatch_event_rule" "karpenter_scheduled_change" {
     source      = ["aws.health"]
     detail-type = ["AWS Health Event"]
   })
-  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "karpenter_scheduled_change" {
@@ -62,7 +59,6 @@ resource "aws_cloudwatch_event_rule" "karpenter_spot_interruption" {
     source      = ["aws.ec2"]
     detail-type = ["EC2 Spot Instance Interruption Warning"]
   })
-  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "karpenter_spot_interruption" {
@@ -76,7 +72,6 @@ resource "aws_cloudwatch_event_rule" "karpenter_rebalance" {
     source      = ["aws.ec2"]
     detail-type = ["EC2 Instance Rebalance Recommendation"]
   })
-  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "karpenter_rebalance" {
@@ -90,7 +85,6 @@ resource "aws_cloudwatch_event_rule" "karpenter_instance_state" {
     source      = ["aws.ec2"]
     detail-type = ["EC2 Instance State-change Notification"]
   })
-  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "karpenter_instance_state" {
@@ -104,7 +98,6 @@ resource "aws_cloudwatch_event_rule" "karpenter_capacity_reservation_interruptio
     source      = ["aws.ec2"]
     detail-type = ["EC2 Capacity Reservation Instance Interruption Warning"]
   })
-  tags = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "karpenter_capacity_reservation_interruption" {
@@ -230,8 +223,6 @@ resource "aws_iam_policy" "karpenter_node_lifecycle" {
       },
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_policy" "karpenter_iam_integration" {
@@ -303,8 +294,6 @@ resource "aws_iam_policy" "karpenter_iam_integration" {
       },
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_policy" "karpenter_eks_integration" {
@@ -321,8 +310,6 @@ resource "aws_iam_policy" "karpenter_eks_integration" {
       }
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_policy" "karpenter_interruption_policy" {
@@ -339,8 +326,6 @@ resource "aws_iam_policy" "karpenter_interruption_policy" {
       }
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_policy" "karpenter_resource_discovery" {
@@ -397,8 +382,6 @@ resource "aws_iam_policy" "karpenter_resource_discovery" {
       },
     ]
   })
-
-  tags = local.common_tags
 }
 
 # Controller IRSA role
@@ -423,8 +406,6 @@ resource "aws_iam_role" "karpenter_controller" {
       }
     ]
   })
-
-  tags = local.common_tags
 }
 
 resource "aws_iam_role_policy_attachment" "karpenter_controller_node_lifecycle" {

@@ -6,17 +6,17 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-vpc"
-  })
+  }
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-igw"
-  })
+  }
 }
 
 resource "aws_subnet" "public" {
@@ -27,11 +27,11 @@ resource "aws_subnet" "public" {
   availability_zone       = local.azs[count.index]
   map_public_ip_on_launch = true
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name                                        = "${var.cluster_name}-public-${count.index + 1}"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                    = "1"
-  })
+  }
 }
 
 resource "aws_subnet" "private" {
@@ -41,29 +41,29 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(local.vpc_cidr, 4, count.index + 8)
   availability_zone = local.azs[count.index]
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name                                        = "${var.cluster_name}-private-${count.index + 1}"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"           = "1"
     "karpenter.sh/discovery"                    = var.cluster_name
-  })
+  }
 }
 
 resource "aws_eip" "nat" {
   domain = "vpc"
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-nat-eip"
-  })
+  }
 }
 
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-nat"
-  })
+  }
 
   depends_on = [aws_internet_gateway.this]
 }
@@ -76,9 +76,9 @@ resource "aws_route_table" "public" {
     gateway_id = aws_internet_gateway.this.id
   }
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-public-rt"
-  })
+  }
 }
 
 resource "aws_route_table_association" "public" {
@@ -96,9 +96,9 @@ resource "aws_route_table" "private" {
     nat_gateway_id = aws_nat_gateway.this.id
   }
 
-  tags = merge(local.common_tags, {
+  tags = {
     Name = "${var.cluster_name}-private-rt"
-  })
+  }
 }
 
 resource "aws_route_table_association" "private" {
