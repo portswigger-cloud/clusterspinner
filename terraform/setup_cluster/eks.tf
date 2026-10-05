@@ -62,6 +62,22 @@ resource "aws_eks_cluster" "this" {
   depends_on = [aws_iam_role_policy_attachment.cluster_policy]
 }
 
+resource "aws_eks_access_entry" "relcoord" {
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = "arn:aws:iam::436027055282:role/product-roles/relcoord-irsarole"
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "relcoord_admin_view" {
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = aws_eks_access_entry.relcoord.principal_arn
+  policy_arn    = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
 resource "aws_ec2_tag" "cluster_sg_discovery" {
   resource_id = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
   key         = "karpenter.sh/discovery"

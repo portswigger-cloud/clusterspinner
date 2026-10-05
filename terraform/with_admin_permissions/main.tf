@@ -40,6 +40,7 @@ locals {
   karpenter_policy_arns           = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/KarpenterController*-${name}"]
   karpenter_queue_arns            = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:sqs:${local.region}:${data.aws_caller_identity.current.account_id}:${name}"]
   karpenter_event_rule_arns       = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:events:${local.region}:${data.aws_caller_identity.current.account_id}:rule/${name}-karpenter-*"]
+  cluster_access_entry_arns       = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:eks:${local.region}:${data.aws_caller_identity.current.account_id}:access-entry/${name}/role/*"]
   karpenter_access_entry_arns     = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:eks:${local.region}:${data.aws_caller_identity.current.account_id}:access-entry/${name}/role/${data.aws_caller_identity.current.account_id}/${name}-karpenter-node-role/*"]
   karpenter_instance_profile_arns = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:instance-profile/karpenter/*/${name}/*"]
   eks_nodegroup_slr_arn           = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
@@ -364,6 +365,20 @@ resource "aws_iam_policy" "clusterspinner_karpenter" {
           "eks:DescribeAccessEntry"
         ]
         Resource = concat(local.cluster_arns, local.karpenter_access_entry_arns)
+      },
+      {
+        Sid    = "EksAccessEntryForClusterAccess"
+        Effect = "Allow"
+        Action = [
+          "eks:AssociateAccessPolicy",
+          "eks:CreateAccessEntry",
+          "eks:DeleteAccessEntry",
+          "eks:DescribeAccessEntry",
+          "eks:DisassociateAccessPolicy",
+          "eks:ListAssociatedAccessPolicies",
+          "eks:UpdateAccessEntry"
+        ]
+        Resource = concat(local.cluster_arns, local.cluster_access_entry_arns)
       },
       {
         Sid    = "SqsKarpenterInterruptionQueue"
