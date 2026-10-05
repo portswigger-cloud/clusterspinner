@@ -34,6 +34,7 @@ locals {
   node_role_arns                  = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${name}-node-role"]
   ebs_csi_role_arns               = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${name}-ebs-csi-driver"]
   irsa_role_arns                  = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${name}-*"]
+  crossplane_provider_role_arns   = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/crossplane/crossplane-provider-aws-*-${name}"]
   irsa_policy_arns                = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/${name}-*"]
   karpenter_node_role_arns        = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${name}-karpenter-node-role"]
   karpenter_controller_role_arns  = [for name in var.cluster_names : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${name}-karpenter"]
@@ -189,7 +190,7 @@ resource "aws_iam_policy" "clusterspinner" {
           "iam:UntagRole",
           "iam:UpdateAssumeRolePolicy"
         ]
-        Resource = concat(local.cluster_role_arns, local.node_role_arns, local.ebs_csi_role_arns, local.irsa_role_arns, [local.eks_nodegroup_slr_arn])
+        Resource = concat(local.cluster_role_arns, local.node_role_arns, local.ebs_csi_role_arns, local.irsa_role_arns, local.crossplane_provider_role_arns, [local.eks_nodegroup_slr_arn])
       },
       {
         Sid    = "IamManagedPolicyReadAndPassRole"
