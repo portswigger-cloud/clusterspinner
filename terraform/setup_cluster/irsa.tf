@@ -66,9 +66,9 @@ resource "aws_iam_role" "crossplane_provider_aws_iam" {
   })
 }
 
-# Manage roles and policies under /crossplane/ only, and only roles that carry
-# the crossplane permissions boundary, so the provider cannot mint anything
-# broader than that boundary allows.
+# Read any role, but create and change only roles under /crossplane/, and create
+# only with the crossplane permissions boundary attached, so the provider cannot
+# mint anything broader than that boundary allows.
 resource "aws_iam_role_policy" "crossplane_provider_aws_iam" {
   name = "manage-crossplane-iam"
   role = aws_iam_role.crossplane_provider_aws_iam.id
@@ -88,23 +88,35 @@ resource "aws_iam_role_policy" "crossplane_provider_aws_iam" {
         }
       },
       {
+        # A read of a role that does not exist yet is authorised against its bare
+        # name, since there is no path to resolve, so a /crossplane/-scoped
+        # resource never matches it and the provider cannot even observe a Role
+        # before creating it. Reads therefore cover every role; writes below do not.
+        Sid    = "ReadRoles"
+        Effect = "Allow"
+        Action = [
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListInstanceProfilesForRole",
+          "iam:ListRoleTags"
+        ]
+        Resource = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/*"
+      },
+      {
         Sid    = "ManageCrossplaneRoles"
         Effect = "Allow"
         Action = [
           "iam:DeleteRole",
-          "iam:GetRole",
           "iam:UpdateRole",
           "iam:UpdateAssumeRolePolicy",
           "iam:TagRole",
           "iam:UntagRole",
-          "iam:ListRoleTags",
           "iam:PutRolePolicy",
-          "iam:GetRolePolicy",
           "iam:DeleteRolePolicy",
-          "iam:ListRolePolicies",
           "iam:AttachRolePolicy",
-          "iam:DetachRolePolicy",
-          "iam:ListAttachedRolePolicies"
+          "iam:DetachRolePolicy"
         ]
         Resource = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/crossplane/*"
       },
