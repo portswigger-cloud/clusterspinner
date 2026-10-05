@@ -14,9 +14,7 @@ There are three stages of terraform to set up the environment.
 
 1. Create the terraform state bucket.
 2. Run the account level terraform setup. This is designed to be done with a highly privileged AWS IAM Role and 
-   will create a less privileged role for the next step. It will also create a Route53 DNS zone to put
-   teleport endpoints in for the clusters that are created. You will need to add the NS recors for this
-   zone to some other DNS zone that you already control.
+   will create a less privileged role for the next step.
 3. Run the cluster level terraform setup. This can be done one or more times to set up independent clusters.
 
 The terraform run in setup_cluster will set up ArgoCD in the newly created cluster that will attempt to clone 
@@ -60,13 +58,6 @@ The manifests are set up to bring up a Teleport cluster with endpoint that can b
 * Install latest [manifest-builder](https://github.com/nresare/manifest-builder) tool
 * I invoked `uv run manifest-builder -c config -o ../cluster0-manifests --create-commit --allow-dirty-config`
 * Push the generated directory to the newly created repository
-
-### Delegate the domain
-
-The with_admin_permissions terraform module will create a Route53 hosted zone for all the clusters that are
-brought up in this AWS account. Once the terraform run is complete, it will list some NS records that you need
-to add to the parent zone. Once created, the zone will be used to set up a Teleport public endpoint, named
-the same as the cluster that can be used to gain access.
 
 ### Grant yourself Teleport access.
 
