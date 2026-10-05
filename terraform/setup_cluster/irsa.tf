@@ -36,3 +36,86 @@ resource "aws_eks_addon" "ebs_csi_driver" {
 
   depends_on = [aws_eks_node_group.default]
 }
+
+# The role the crossplane iam provider assumes through IRSA. Its name is what
+# the system repo derives for fe-dev from role-suffix: crossplane-provider-aws-iam
+# plus the suffix, on /crossplane/ with the other roles the provider works with.
+# The suffix keeps it apart from the role platform-dev already has in this
+# account, whose trust policy names only platform-dev's OIDC provider.
+resource "aws_iam_role" "crossplane_provider_aws_iam" {
+  name = "crossplane-provider-aws-iam-${var.cluster_name}"
+  path = "/crossplane/"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.eks.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount:crossplane-system:provider-aws-iam"
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:aud" = "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# Manage roles and policies under /crossplane/ only, and only roles that carry
+# the crossplane permissions boundary, so the provider cannot mint anything
+# broader than that boundary allows.
+resource "aws_iam_role_policy" "crossplane_provider_aws_iam" {
+  name = "manage-crossplane-iam"
+  role = aws_iam_role.crossplane_provider_aws_iam.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "CreateRolesWithBoundary"
+        Effect   = "Allow"
+        Action   = ["iam:CreateRole", "iam:PutRolePermissionsBoundary"]
+        Resource = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/crossplane/*"
+        Condition = {
+          StringEquals = {
+            "iam:PermissionsBoundary" = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/crossplane/permissions-boundary"
+          }
+        }
+      },
+      {
+        Sid    = "ManageCrossplaneRoles"
+        Effect = "Allow"
+        Action = [
+          "iam:DeleteRole",
+          "iam:GetRole",
+          "iam:UpdateRole",
+          "iam:UpdateAssumeRolePolicy",
+          "iam:TagRole",
+          "iam:UntagRole",
+          "iam:ListRoleTags",
+          "iam:PutRolePolicy",
+          "iam:GetRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:ListAttachedRolePolicies"
+        ]
+        Resource = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/crossplane/*"
+      },
+      {
+        # This role lives under the path it manages, so without this it could
+        # rewrite its own trust or permissions.
+        Sid      = "NotThisRole"
+        Effect   = "Deny"
+        Action   = "iam:*"
+        Resource = aws_iam_role.crossplane_provider_aws_iam.arn
+      }
+    ]
+  })
+}
