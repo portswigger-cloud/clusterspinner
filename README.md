@@ -35,6 +35,11 @@ The manifests are set up to bring up a Teleport cluster with endpoint that can b
 * Go to the `terraform/create_bucket` directory and run `terraform init`,
 * Run `terraform apply -var=bucket_name=$BUCKET -var=region=$REGION`
 
+### Set up account-wide resources
+* Set up your AWS credentials with a role with broad permissions such as `AdministratorAccess`
+* Go to the `terraform/setup_account` directory and run `terraform init -backend-config=bucket=$BUCKET -backend-config=region=$REGION`,
+* Run `terraform plan` and `terraform apply`. This creates the crossplane permissions boundary and the roles Teleport assumes.
+
 ### Create the account level terraform setup
 * Set up your AWS credentials with a role with broad permissions such as `AdministratorAccess`
 * Go to the `terraform/with_admin_permissions` directory and run `terraform init -backend-config=bucket=$BUCKET -backend-config=region=$REGION`,
