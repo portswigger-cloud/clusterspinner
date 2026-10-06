@@ -8,7 +8,7 @@
 # roles, so they are not free to change.
 #
 # Account-wide rather than per-cluster, and the runner role is not allowed to
-# manage policies at this path, so it lives with the admin permissions.
+# manage policies at this path, so it lives in setup_account.
 #
 # A deny-list rather than an allow-list: the roles' own policies are what narrow
 # them, and the boundary only has to rule out the categories that must never be
