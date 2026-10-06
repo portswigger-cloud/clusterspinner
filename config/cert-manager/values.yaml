@@ -1,8 +1,0 @@
-# SPDX-FileCopyrightText: 2026 The clusterspinner contributors
-# SPDX-License-Identifier: MIT
-
-crds:
-  enabled: true
-serviceAccount:
-  annotations:
-    "eks.amazonaws.com/role-arn": "arn:aws:iam::{{account_id}}:role/{{cluster_name}}-cert-manager"
