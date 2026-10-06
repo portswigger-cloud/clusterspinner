@@ -384,9 +384,12 @@ resource "aws_iam_policy" "karpenter_resource_discovery" {
   })
 }
 
-# Controller IRSA role
+# Controller IRSA role. It lives on /with-iam/, the path the service control
+# policy exempts from its iam:* deny, since it needs iam:PassRole and the
+# instance profile calls to launch nodes.
 resource "aws_iam_role" "karpenter_controller" {
   name = "${var.cluster_name}-karpenter"
+  path = "/with-iam/"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

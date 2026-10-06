@@ -39,12 +39,13 @@ resource "aws_eks_addon" "ebs_csi_driver" {
 
 # The role the crossplane iam provider assumes through IRSA. Its name is what
 # the system repo derives for fe-dev from role-suffix: crossplane-provider-aws-iam
-# plus the suffix, on /crossplane/ with the other roles the provider works with.
+# plus the suffix. It lives on /with-iam/, the path the service control policy
+# exempts from its iam:* deny, while the roles it manages live on /crossplane/.
 # The suffix keeps it apart from the role platform-dev already has in this
 # account, whose trust policy names only platform-dev's OIDC provider.
 resource "aws_iam_role" "crossplane_provider_aws_iam" {
   name = "crossplane-provider-aws-iam-${var.cluster_name}"
-  path = "/crossplane/"
+  path = "/with-iam/"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
