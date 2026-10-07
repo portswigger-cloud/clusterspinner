@@ -15,10 +15,9 @@ locals {
       description = "An admin role for teleport to assume in this account"
       policy_arns = ["arn:${local.partition}:iam::aws:policy/AdministratorAccess"]
     }
-    # No path, which keeps the role out of every path-scoped IAM permission.
     readonly = {
       name        = "readonly"
-      path        = "/"
+      path        = local.with_iam_path
       description = "A readonly role for teleport to assume in this account"
       policy_arns = ["arn:${local.partition}:iam::aws:policy/ReadOnlyAccess"]
     }
